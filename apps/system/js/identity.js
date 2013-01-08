@@ -54,7 +54,7 @@ var Identity = (function() {
 
           if (e.detail.showUI) {
             // The identity flow is shown within the trusted UI.
-            TrustedUIManager.open('IdentityFlow', frame, this.chromeEventId);
+            TrustedUIManager.open(navigator.mozL10n.get('persona-signin'), frame, this.chromeEventId);
           } else {
             var container = document.getElementById('screen');
             container.appendChild(frame);
