@@ -18,6 +18,8 @@ var PiCl = {
 
   init: function picl_init(options) {
     options = options || {};
+
+    console.log("keyserver host: " + this._keyServerHost);
   },
 
   handleError: function picl_handleError(error) {
@@ -60,7 +62,7 @@ var PiCl = {
       xhr.onerror = function() {
         handleError(xhr.response);
       };
-      xhr.open('POST', _keyServerHost + '/user', true);
+      xhr.open('POST', this._keyServerHost + '/user', true);
       xhr.send(args);
     }
   },
@@ -88,7 +90,7 @@ var PiCl = {
         alert(xhr.response);
         //handleError(xhr.response);
       };
-      xhr.open('GET', _keyServerHost + '/user/?email=' + args.email, true);
+      xhr.open('GET', this._keyServerHost + '/user/?email=' + args.email, true);
       xhr.send();
     }
   }
