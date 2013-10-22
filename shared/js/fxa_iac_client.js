@@ -39,11 +39,21 @@ var FxAccountsIACHelper = function FxAccountsIACHelper() {
   // to a single manifest.
   var sendMessage = function sendMessage(message, successCb, errorCb) {
     getSelf(function onApp(app) {
+<<<<<<< HEAD
       app.connect(CONNECTION_STRING, rules).then(function(ports) {
         if (!ports || ports.length !== 1) {
           if (errorCb && typeof(errorCb) === 'function') {
             errorCb();
           }
+=======
+      if (!errorCb || typeof errorCb !== 'function') {
+        errorCb = function() {};
+      }
+
+      app.connect(CONNECTION_STRING, rules).then(function(ports) {
+        if (!ports || ports.length !== 1) {
+          errorCb();
+>>>>>>> dc65aef... Bug 929388 - Incorporate a FXA Manager and FXA Clientinto the System app
           return;
         }
 
