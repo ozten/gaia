@@ -13,6 +13,10 @@ function getIssuerName() {
   return document.getElementById('issuer-name').value.trim();
 }
 
+function getWantIssuerName() {
+  return document.getElementById('wantIssuer-name').value.trim();
+}
+
 function unpackAssertion(assertion) {
   var parts = assertion.split('.');
   return {
@@ -110,6 +114,12 @@ function IdentityTests() {
         navigator.mozId.request({
           allowUnverified: getUnverifiedOk(),
           forceIssuer: getIssuerName()
+        });
+      },
+
+      't-request-wantIssuer': function() {
+        navigator.mozId.request({
+          wantIssuer: getWantIssuerName()
         });
       },
 
