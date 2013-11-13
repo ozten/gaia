@@ -50,6 +50,7 @@ var FxaModuleNavigation = {
   back: function() {
     this.backAnim = true;
     window.history.back();
+    this.currentModule.onBack();
   },
   next: function() {
     // get a reference to the module responsible for the next button ..

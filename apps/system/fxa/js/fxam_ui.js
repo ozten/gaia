@@ -17,15 +17,15 @@ var FxaModuleUI = {
       FxaModuleManager.close();
     });
 
-    this.back.addEventListener('click', function() {
+    this.back.addEventListener('mousedown', function() {
       FxaModuleNavigation.back();
     });
 
-    this.next.addEventListener('click', function() {
+    this.next.addEventListener('mousedown', function() {
       FxaModuleNavigation.next();
     });
 
-    this.done.addEventListener('click', function() {
+    this.done.addEventListener('mousedown', function() {
       FxaModuleManager.done();
     });
 
@@ -115,5 +115,11 @@ var FxaModuleUI = {
   },
   setNextText: function(l10n) {
     this.next.textContent = l10n;
+  },
+  disableNextButton: function() {
+    this.next.setAttribute('disabled', 'disabled');
+  },
+  enableNextButton: function() {
+    this.next.removeAttribute('disabled');
   }
 };
