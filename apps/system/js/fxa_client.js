@@ -16,7 +16,6 @@ var FxAccountsClient = function FxAccountsClient() {
 
   var sendMessage = function sendMessage(message, successCb, errorCb) {
     if (!eventCount) {
-      window.addEventListener('mozChromeEvent', onChromeEvent);
       window.addEventListener('mozFxAccountsChromeEvent', onChromeEvent);
     }
 

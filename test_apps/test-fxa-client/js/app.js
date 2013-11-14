@@ -37,7 +37,7 @@ var TestFxAClient = function TestFxAClient() {
       case 'deleteAccount':
       case 'changePassword':
         FxAccountsIACHelper[method]('dummy@domain.org', showResponse,
-                                    showResponse);
+                                    showError);
         break;
     }
 
