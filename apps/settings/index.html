@@ -153,6 +153,7 @@
     <link rel="import" href="/elements/help.html">
     <link rel="import" href="/elements/icc.html">
     <link rel="import" href="/elements/downloads.html">
+    <link rel="import" href="/elements/findmydevice.html">
   </head>
   <body class="skin-organic uninit">
     <!--
@@ -267,6 +268,9 @@
     <!-- Personalization :: Keyboard -->
     <section is="keyboard" role="region" id="keyboard" data-require-sub-panels="true"></section>
     <section is="keyboard-enabled-default" role="region" id="keyboard-enabled-default"></section>
+
+    <!-- Accounts :: Find My Device -->
+    <section is="findmydevice" role="region" id="findmydevice"></section>
 
     <!-- Security :: Phone Lock :: PIN Input -->
     <section is="phoneLock-passcode" role="region" id="phoneLock-passcode"></section>
@@ -418,15 +422,20 @@
         </ul>
 
         <!-- Main :: Accounts -->
-        <header hidden="">
+        <header>
           <h2 data-l10n-id="accounts">Accounts</h2>
         </header>
-        <ul hidden="">
-          <li>
+        <ul>
+          <li hidden="">
             <a id="menuItem-persona" class="menu-item" href="#persona" data-l10n-id="persona">Persona</a>
           </li>
-          <li>
+          <li hidden="">
             <a id="menuItem-mail" class="menu-item" href="#mail" data-l10n-id="mail">Mail</a>
+          </li>
+          <li>
+            <small id="findmydevice-desc" class="menu-item-desc"></small>
+            <a id="menuItem-findmydevice" class="menu-item" href="#findmydevice"
+              data-l10n-id="findmydevice">Find My Device</a>
           </li>
         </ul>
 
