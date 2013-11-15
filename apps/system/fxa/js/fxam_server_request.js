@@ -21,14 +21,9 @@
 
   var FxModuleServerRequest = {
     checkEmail: function(email, onsuccess, onerror) {
-      // TODO:
-      // FxAccountsClient.queryAccount(email, onsuccess, onerror);
+      FxAccountsClient.queryAccount(email, onsuccess, onerror);
       // is the method we need. However, we need to figure out if
       // error was due to wrong email, or network connection
-      var params = {
-        registered: true
-      };
-      _mockBehaviour(onsuccess, onerror, params);
     },
     checkPassword: function(email, password, onsuccess, onerror) {
       var params = {
