@@ -192,5 +192,7 @@
    "wifi.disabled_by_wakelock": false,
    "wifi.notification": false,
    "wifi.connect_via_settings": false,
-   "wap.push.enabled": true
+   "wap.push.enabled": true,
+   "whereismyfox.api_url": "http://ec2-54-241-87-238.us-west-1.compute.amazonaws.com",
+   "whereismyfox.api_version": "0"
 }

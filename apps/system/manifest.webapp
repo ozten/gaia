@@ -43,7 +43,9 @@
     "input-manage":{},
     "nfc":{ "access": "readonly" },
     "nfc-manager":{},
-    "downloads":{}
+    "downloads":{},
+    "push": {},
+    "systemXHR": {}
   },
   "locales": {
     "ar": {
@@ -77,7 +79,8 @@
      { "cdma-info-rec-received": "/index.html" },
      { "nfc-manager-tech-discovered": "/index.html" },
      { "nfc-manager-tech-lost": "/index.html" },
-     { "nfc-manager-send-file": "/index.html" }
+     { "nfc-manager-send-file": "/index.html" },
+     { "push": "/index.html" }
   ],
   "connections": {
     "mediacomms": {
