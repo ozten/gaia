@@ -108,6 +108,15 @@
       "rules": {
         "minimumAccessLevel": "certified"
       }
+    },
+    "findmydevicetestcomms": {
+      "description": "Manually trigger commands for testing",
+      "rules": {
+        "manifestURLs": [
+          "app://test-findmydevice.gaiamobile.org/manifest.webapp",
+          "http://test-findmydevice.gaiamobile.org:8080/manifest.webapp"
+        ]
+      }
     }
   },
   "datastores-owned": {

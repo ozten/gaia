@@ -4,7 +4,7 @@ marionette('Find My Device lock >', function() {
   var assert = require('assert');
   var System = require('./lib/system.js');
 
-  var FINDMYDEVICE_TEST_APP = 'app://findmydevice-test.gaiamobile.org';
+  var FINDMYDEVICE_TEST_APP = 'app://test-findmydevice.gaiamobile.org';
 
   var client = marionette.client({
     prefs: {

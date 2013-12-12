@@ -88,6 +88,21 @@ var FindMyDevice = {
         self._replyAndFetchCommands();
       }
     });
+
+    navigator.mozSetMessageHandler('connection', function(request) {
+      if (request.keyword !== 'findmydevicetestcomms') {
+        return;
+      }
+
+      var port = request.port;
+      port.onmessage = function(event) {
+        console.log('got request for test command!');
+        var enabled = self._enabled;
+        self._enabled = true;
+        self._processCommands(event.data);
+        self.enabled = enabled;
+      };
+    });
   },
 
   _registerIfEnabled: function fmd_register() {
