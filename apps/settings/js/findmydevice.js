@@ -3,29 +3,38 @@
 'use strict';
 
 var FindMyDevice = {
-  _api: null,
-  _personaIframe: null,
+  // When the FxA login callback is called, we need know if the
+  // login process began with the user clicking our login button
+  // since in that case we also want to enable Find My Device
+  _interactiveLogin: false,
 
   init: function fmd_init() {
     var self = this;
+    var api = null;
 
     var lock = SettingsListener.getSettingsLock();
     lock.get('findmydevice.api_url').onsuccess = function() {
-      self._api = this.result['findmydevice.api_url'];
+      api = this.result['findmydevice.api_url'];
     };
 
     SettingsListener.observe('findmydevice.enabled', false,
       this._setEnabled.bind(this));
-    SettingsListener.observe('findmydevice.registered', false,
-      this._setRegistered.bind(this));
-
-    var loginButton = document.getElementById('findmydevice-login');
-    loginButton.addEventListener('click', this._requestLogin.bind(this));
 
     var checkbox = document.querySelector('#findmydevice-enabled input');
     checkbox.addEventListener('change', this._onCheckboxChanged.bind(this));
 
-    window.addEventListener('message', this._onAssertionObtained.bind(this));
+    navigator.mozId.watch({
+      wantIssuer: 'firefox-accounts',
+      onlogin: this._onChangeLoginState.bind(this, true),
+      onlogout: this._onChangeLoginState.bind(this, false),
+      onready: function fmd_fxa_onready() {
+        var loginButton = document.getElementById('findmydevice-login');
+        loginButton.addEventListener('click', function() {
+          self._interactiveLogin = true;
+          navigator.mozId.request({audience: api});
+        });
+      }
+    });
   },
 
   _setEnabled: function fmd_set_enabled(value) {
@@ -39,22 +48,20 @@ var FindMyDevice = {
     checkbox.disabled = false;
   },
 
-  _setRegistered: function fmd_set_registered(value) {
+  _onChangeLoginState: function fmd_on_change_login_state(loggedIn) {
+    console.log('settings, logged in: ' + loggedIn);
+
     var signin = document.getElementById('findmydevice-signin');
-    signin.hidden = value;
+    signin.hidden = loggedIn;
 
     var settings = document.getElementById('findmydevice-settings');
-    settings.hidden = !value;
-  },
+    settings.hidden = !loggedIn;
 
-  _requestLogin: function fmd_requestLogin() {
-    if (this._personaIframe !== null) {
-      return;
-    }
+    SettingsListener.getSettingsLock().set({
+      'findmydevice.enabled': loggedIn && this._interactiveLogin
+    });
 
-    this._personaIframe = document.createElement('iframe');
-    this._personaIframe.src = this._api + '/static/persona_iframe.html';
-    document.body.appendChild(this._personaIframe);
+    this._interactiveLogin = false;
   },
 
   _onCheckboxChanged: function fmd_on_checkbox_changed() {
@@ -67,24 +74,7 @@ var FindMyDevice = {
       };
 
       checkbox.disabled = true;
-  },
-
-  _onAssertionObtained: function fmd_on_assertion_obtained(event) {
-    document.body.removeChild(this._personaIframe);
-    this._personaIframe = null;
-
-    if (!event.data) {
-      return;
-    }
-
-    SettingsListener.getSettingsLock().set({
-      'findmydevice.assertion': event.data
-    });
-
-    SettingsListener.getSettingsLock().set({
-      'findmydevice.enabled': true
-    });
-  },
+  }
 };
 
 navigator.mozL10n.ready(FindMyDevice.init.bind(FindMyDevice));

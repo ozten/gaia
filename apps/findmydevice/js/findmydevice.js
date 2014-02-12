@@ -7,6 +7,8 @@
 'use strict';
 
 var FindMyDevice = {
+  _serverUrl: null,
+
   _state: null,
 
   _enabled: false,
@@ -16,8 +18,6 @@ var FindMyDevice = {
   // being read before findmydevice.enabled on
   // startup
   _registered: null,
-
-  _assertion: null,
 
   _registering: false,
 
@@ -31,6 +31,11 @@ var FindMyDevice = {
 
   init: function fmd_init() {
     var self = this;
+
+    var lock = SettingsListener.getSettingsLock();
+    lock.get('findmydevice.api_url').onsuccess = function() {
+      self._serverUrl = this.result['findmydevice.api_url'];
+    };
 
     SettingsListener.observe('findmydevice.registered', false, function(value) {
       dump('findmydevice registered: ' + value);
@@ -61,9 +66,14 @@ var FindMyDevice = {
       }
     });
 
-    SettingsListener.observe('findmydevice.assertion', '', function(value) {
-      dump('findmydevice got assertion: ' + value);
-      self._assertion = value;
+    navigator.mozId.watch({
+      wantIssuer: 'firefox-accounts',
+      onlogin: this._onLogin.bind(this),
+      onlogout: function wimf_fxa_onlogout() {
+        SettingsListener.getSettingsLock().set({
+          'findmydevice.enabled': false
+        });
+      }
     });
 
     navigator.mozSetMessageHandler('push', function(message) {
@@ -112,39 +122,38 @@ var FindMyDevice = {
         ', assertion: ' + this._assertion +
         ', registering: ' + this._registering);
 
-    var self = this;
-    if (!this._enabled || !this._assertion || this._registering) {
+    if (!this._enabled || this._registering) {
       return;
     }
 
     this._registering = true;
+
+    // Refresh the assertion we have to make sure it's not expired.
+    // This shouldn't bring up the Firefox Accounts dialog because that
+    // would only happen if it is logged out, and in that case Find My Device
+    // would have been disabled. We will continue the registration process
+    // once we get a new assertion.
+    navigator.mozId.request({
+      audience: this._serverUrl
+    });
+  },
+
+  _onLogin: function fmd_on_login(assertion) {
+    var self = this;
+    if (!this._enabled || !this._registering) {
+      return;
+    }
+
+    // We are in the middle of a registration, so continue here by obtaining a
+    // push endpoint
 
     var pushRequest = navigator.push.register();
     pushRequest.onsuccess = function fmd_push_handler() {
       dump('findmydevice received push endpoint!');
 
       var endpoint = pushRequest.result;
-
-      if (self._enabled && self._assertion) {
-        var obj = {
-          assert: self._assertion,
-          pushurl: endpoint
-        };
-
-        if (self._state !== null) {
-          obj.deviceid = self._state.deviceid;
-        }
-
-        self._requester.post('/register/', obj, function(response) {
-          dump('findmydevice successfully registered: ' +
-            JSON.stringify(response));
-
-          asyncStorage.setItem('findmydevice-state', response, function() {
-            SettingsListener.getSettingsLock().set({
-              'findmydevice.registered': true
-            });
-          });
-        }, self._handleServerError.bind(self));
+      if (self._enabled) {
+        self._requestRegistration(assertion, endpoint);
       }
 
       self._registering = false;
@@ -156,6 +165,28 @@ var FindMyDevice = {
       self._registering = false;
       self._scheduleAlarm('retry');
     };
+  },
+
+  _requestRegistration: function fmd_request_registration(assertion, endpoint) {
+    var obj = {
+      assert: assertion,
+      pushurl: endpoint
+    };
+
+    if (this._state !== null) {
+      obj.deviceid = this._state.deviceid;
+    }
+
+    this._requester.post('/register/', obj, function(response) {
+      console.log('findmydevice successfully registered: ' +
+        JSON.stringify(response));
+
+      asyncStorage.setItem('findmydevice-state', response, function() {
+        SettingsListener.getSettingsLock().set({
+          'findmydevice.registered': true
+        });
+      });
+    }, this._handleServerError.bind(this));
   },
 
   _scheduleAlarm: function fmd_schedule_alarm(mode) {
