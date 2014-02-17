@@ -8,7 +8,7 @@
 
 'use strict';
 
-mocha.globals(['FindMyDeviceCommands']);
+mocha.globals(['FindMyDeviceCommands', 'lockScreen']);
 
 requireApp('system/shared/test/unit/mocks/mock_settings_url.js');
 requireApp('system/shared/test/unit/mocks/mock_settings_listener.js');
@@ -20,12 +20,12 @@ requireApp('system/test/unit/mock_lock_screen.js');
 requireApp('system/test/unit/mock_l10n.js');
 
 var mocksForFindMyDevice = new MocksHelper([
-  'LockScreen', 'SettingsListener', 'SettingsURL', 'Audio', 'DeviceStorage',
-  'Geolocation'
+  'SettingsListener', 'SettingsURL', 'Audio', 'DeviceStorage', 'Geolocation'
 ]).init();
 
 suite('system/FindMyDevice >', function() {
   var realL10n;
+  var realLockScreen;
   var realPermissionSettings;
 
   mocksForFindMyDevice.attachTestHelpers();
@@ -34,6 +34,9 @@ suite('system/FindMyDevice >', function() {
   setup(function(done) {
     realL10n = navigator.mozL10n;
     navigator.mozL10n = window.MockL10n;
+
+    realLockScreen = window.lockScreen;
+    window.lockScreen = MockLockScreen;
 
     realPermissionSettings = navigator.mozPermissionSettings;
     navigator.mozPermissionSettings = MockPermissionSettings;
@@ -134,6 +137,8 @@ suite('system/FindMyDevice >', function() {
 
   teardown(function() {
     navigator.mozL10n = realL10n;
+
+    window.lockScreen = realLockScreen;
 
     MockPermissionSettings.mTeardown();
     navigator.mozPermissionSettings = realPermissionSettings;

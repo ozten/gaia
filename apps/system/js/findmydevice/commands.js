@@ -1,4 +1,4 @@
-/* global LockScreen */
+/* global lockScreen */
 /* global SettingsURL */
 /* global SettingsListener */
 
@@ -46,7 +46,7 @@ var FindMyDeviceCommands = {
   },
 
   _deviceHasPasscode: function fmdc_device_has_passcode() {
-    return LockScreen.enabled && LockScreen.passCodeEnabled;
+    return lockScreen.enabled && lockScreen.passCodeEnabled;
   },
 
   _setPermission: function fmdc_set_permission(permission, value) {
@@ -175,7 +175,7 @@ var FindMyDeviceCommands = {
     }
 
     SettingsListener.getSettingsLock().set(settings).onsuccess = function() {
-      LockScreen.lockIfEnabled(true);
+      lockScreen.lockIfEnabled(true);
       reply(true);
     };
   },
