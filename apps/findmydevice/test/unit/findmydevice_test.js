@@ -1,31 +1,28 @@
 /* global MocksHelper */
 /* global MockPermissionSettings */
 /* global MockSettingsListener */
-/* global MockLockScreen */
 /* global MockDeviceStorage */
 /* global MockGeolocation */
 /* global FindMyDeviceCommands */
 
 'use strict';
 
-mocha.globals(['FindMyDeviceCommands', 'lockScreen']);
+mocha.globals(['FindMyDeviceCommands']);
 
-requireApp('system/shared/test/unit/mocks/mock_settings_url.js');
-requireApp('system/shared/test/unit/mocks/mock_settings_listener.js');
-requireApp('system/shared/test/unit/mocks/mock_audio.js');
-requireApp('system/shared/test/unit/mocks/mock_device_storage.js');
-requireApp('system/shared/test/unit/mocks/mock_geolocation.js');
-requireApp('system/shared/test/unit/mocks/mock_permission_settings.js');
-requireApp('system/test/unit/mock_lock_screen.js');
-requireApp('system/test/unit/mock_l10n.js');
+require('/shared/test/unit/mocks/mocks_helper.js');
+require('/shared/test/unit/mocks/mock_settings_url.js');
+require('/shared/test/unit/mocks/mock_settings_listener.js');
+require('/shared/test/unit/mocks/mock_audio.js');
+require('/shared/test/unit/mocks/mock_device_storage.js');
+require('/shared/test/unit/mocks/mock_geolocation.js');
+require('/shared/test/unit/mocks/mock_permission_settings.js');
 
 var mocksForFindMyDevice = new MocksHelper([
   'SettingsListener', 'SettingsURL', 'Audio', 'DeviceStorage', 'Geolocation'
 ]).init();
 
-suite('system/FindMyDevice >', function() {
+suite('FindMyDevice >', function() {
   var realL10n;
-  var realLockScreen;
   var realPermissionSettings;
 
   mocksForFindMyDevice.attachTestHelpers();
@@ -33,16 +30,17 @@ suite('system/FindMyDevice >', function() {
   var subject;
   setup(function(done) {
     realL10n = navigator.mozL10n;
-    navigator.mozL10n = window.MockL10n;
-
-    realLockScreen = window.lockScreen;
-    window.lockScreen = MockLockScreen;
+    navigator.mozL10n = {
+      ready: function(callback) {
+        callback();
+      }
+    };
 
     realPermissionSettings = navigator.mozPermissionSettings;
     navigator.mozPermissionSettings = MockPermissionSettings;
     MockPermissionSettings.mSetup();
 
-    requireApp('system/js/findmydevice/commands.js', function() {
+    require('/js/commands.js', function() {
       subject = FindMyDeviceCommands;
       done();
     });
@@ -53,7 +51,6 @@ suite('system/FindMyDevice >', function() {
 
     subject.lock({c: code, m: message}, function(retval) {
       assert.equal(retval, true);
-      assert.equal(MockLockScreen.locked, true);
 
       var lock = MockSettingsListener.getSettingsLock().locks.pop();
       assert.deepEqual({
@@ -61,7 +58,8 @@ suite('system/FindMyDevice >', function() {
         'lockscreen.notifications-preview.enabled': false,
         'lockscreen.passcode-lock.enabled': true,
         'lockscreen.lock-message': message,
-        'lockscreen.passcode-lock.code': code
+        'lockscreen.passcode-lock.code': code,
+        'lockscreen.lock-immediately': true
       }, lock, 'check that the correct settings were set');
 
       done();
@@ -109,8 +107,8 @@ suite('system/FindMyDevice >', function() {
   test('Track command', function(done) {
     // mock the result of mozApps.getSelf()
     subject._app = {
-      manifestURL: 'app://system.gaiamobile.org/manifest.webapp',
-      origin: 'app://system.gaiamobile.org/'
+      manifestURL: 'app://findmydevice.gaiamobile.org/manifest.webapp',
+      origin: 'app://findmydevice.gaiamobile.org/'
     };
 
     // we want to make sure this is set to 'allow'
@@ -137,8 +135,6 @@ suite('system/FindMyDevice >', function() {
 
   teardown(function() {
     navigator.mozL10n = realL10n;
-
-    window.lockScreen = realLockScreen;
 
     MockPermissionSettings.mTeardown();
     navigator.mozPermissionSettings = realPermissionSettings;

@@ -2,7 +2,6 @@
 
 marionette('Find My Device lock >', function() {
   var assert = require('assert');
-  var System = require('./lib/system.js');
 
   var FINDMYDEVICE_TEST_APP = 'app://test-findmydevice.gaiamobile.org';
 
@@ -15,16 +14,15 @@ marionette('Find My Device lock >', function() {
       'lockscreen.enabled': false
     },
   });
-  var sys = new System(client);
 
-  var testApp;
   setup(function() {
-    testApp = sys.waitForLaunch(FINDMYDEVICE_TEST_APP);
+    // launch the test app
+    client.apps.launch(FINDMYDEVICE_TEST_APP);
+    client.apps.switchToApp(FINDMYDEVICE_TEST_APP);
+    client.helper.waitForElement('body');
   });
 
   test('Lock the screen through the test app', function() {
-    client.apps.switchToApp(FINDMYDEVICE_TEST_APP);
-
     var messageText = 'This phone is lost.';
     var messageInput = client.findElement('input[name="message"]');
     messageInput.sendKeys(messageText);

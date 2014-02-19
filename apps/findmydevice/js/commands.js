@@ -1,4 +1,3 @@
-/* global lockScreen */
 /* global SettingsURL */
 /* global SettingsListener */
 
@@ -12,6 +11,10 @@ var FindMyDeviceCommands = {
   _watchId: null,
 
   _app: null,
+
+  _lockscreenEnabled: false,
+
+  _lockscreenPassCodeEnabled: false,
 
   init: function fmdc_init() {
     var self = this;
@@ -31,6 +34,16 @@ var FindMyDeviceCommands = {
       }
     });
 
+    SettingsListener.observe('lockscreen.enabled', false, function(value) {
+      self._lockscreenEnabled = value;
+    });
+
+    SettingsListener.observe('lockscreen.passcode-lock.enabled', false,
+      function(value) {
+        self._lockscreenPassCodeEnabled = value;
+      }
+    );
+
     this._app = null;
     var appreq = navigator.mozApps.getSelf();
     appreq.onsuccess = function fmdc_getapp_success() {
@@ -46,7 +59,7 @@ var FindMyDeviceCommands = {
   },
 
   _deviceHasPasscode: function fmdc_device_has_passcode() {
-    return lockScreen.enabled && lockScreen.passCodeEnabled;
+    return this._lockscreenEnabled && this.lockscreenPassCodeEnabled;
   },
 
   _setPermission: function fmdc_set_permission(permission, value) {
@@ -163,7 +176,8 @@ var FindMyDeviceCommands = {
     var settings = {
       'lockscreen.enabled': true,
       'lockscreen.notifications-preview.enabled': false,
-      'lockscreen.passcode-lock.enabled': true
+      'lockscreen.passcode-lock.enabled': true,
+      'lockscreen.lock-immediately': true
     };
 
     if (message) {
@@ -175,7 +189,6 @@ var FindMyDeviceCommands = {
     }
 
     SettingsListener.getSettingsLock().set(settings).onsuccess = function() {
-      lockScreen.lockIfEnabled(true);
       reply(true);
     };
   },

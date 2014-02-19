@@ -43,9 +43,7 @@
     "input-manage":{},
     "nfc":{ "access": "readonly" },
     "nfc-manager":{},
-    "downloads":{},
-    "push": {},
-    "systemXHR": {}
+    "downloads":{}
   },
   "locales": {
     "ar": {
@@ -107,15 +105,6 @@
       "description": "Firefox Accounts management API",
       "rules": {
         "minimumAccessLevel": "certified"
-      }
-    },
-    "findmydevicetestcomms": {
-      "description": "Manually trigger commands for testing",
-      "rules": {
-        "manifestURLs": [
-          "app://test-findmydevice.gaiamobile.org/manifest.webapp",
-          "http://test-findmydevice.gaiamobile.org:8080/manifest.webapp"
-        ]
       }
     }
   },
