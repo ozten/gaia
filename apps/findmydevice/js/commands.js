@@ -75,7 +75,7 @@ var FindMyDeviceCommands = {
   },
 
   track: function fmdc_track(args, reply) {
-    var duration = parseInt(args.d);
+    var duration = parseInt(args.d, 10);
 
     // XXX we actually ignore nonzero durations for the
     // time being.
@@ -180,7 +180,7 @@ var FindMyDeviceCommands = {
 
   ring: function fmdc_ring(args, reply) {
     var self = this;
-    var duration = parseInt(args.d);
+    var duration = parseInt(args.d, 10);
 
     function stop() {
       self._ringer.pause();
