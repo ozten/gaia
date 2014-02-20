@@ -24,6 +24,7 @@ var mocksForFindMyDevice = new MocksHelper([
 suite('FindMyDevice >', function() {
   var realL10n;
   var realPermissionSettings;
+  var realMozPower;
 
   mocksForFindMyDevice.attachTestHelpers();
 
@@ -39,6 +40,13 @@ suite('FindMyDevice >', function() {
     realPermissionSettings = navigator.mozPermissionSettings;
     navigator.mozPermissionSettings = MockPermissionSettings;
     MockPermissionSettings.mSetup();
+
+    navigator.mozPower = {
+      factoryResetCalled: false,
+      factoryReset: function() {
+        this.factoryResetCalled = true;
+      }
+    };
 
     require('/js/commands.js', function() {
       subject = FindMyDeviceCommands;
@@ -95,11 +103,7 @@ suite('FindMyDevice >', function() {
         assert.deepEqual(MockDeviceStorage.instances[i].entries, []);
       }
 
-      // we only really want to check whether we made it this far,
-      // no need to mock mozPower as well.
-      assert.equal(retval, false);
-      assert.equal(error, 'mozPower is not available!');
-
+      assert.equal(navigator.mozPower.factoryResetCalled, true);
       done();
     });
   });
@@ -138,5 +142,7 @@ suite('FindMyDevice >', function() {
 
     MockPermissionSettings.mTeardown();
     navigator.mozPermissionSettings = realPermissionSettings;
+
+    navigator.mozPower = realMozPower;
   });
 });

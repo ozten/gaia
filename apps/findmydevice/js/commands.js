@@ -133,7 +133,8 @@ var FindMyDeviceCommands = {
           console.log('done wiping ' + target);
           if (++wiped == toWipe.length) {
             console.log('all targets wiped, starting factory reset!');
-            factory_reset();
+            navigator.mozPower.factoryReset();
+            reply(true); // testing only
           }
         }
       };
@@ -144,19 +145,6 @@ var FindMyDeviceCommands = {
         console.log('wipe failed to acquire cursor for ' + target);
         wiped++;
       };
-    }
-
-    function factory_reset() {
-      if (navigator.mozPower && navigator.mozPower.factoryReset) {
-        console.log('in factory reset, ready to reset!');
-        setTimeout(function() {
-          navigator.mozPower.factoryReset();
-        }, 3000);
-      } else {
-        // FIXME can this really happen?
-        console.log('in factory reset, mozPower is missing!');
-        reply(false, 'mozPower is not available!');
-      }
     }
 
     for (var i = 0; i < toWipe.length; i++) {
