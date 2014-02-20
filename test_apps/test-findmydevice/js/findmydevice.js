@@ -16,20 +16,17 @@ window.onload = function() {
     });
   };
 
-  var buttons = document.getElementsByTagName('button');
-  for (var i = 0; i < buttons.length; i++) {
-    (function (command) {
-      buttons[i].addEventListener('click', function() {
-        var cmdobj = {};
-        cmdobj[command] = {};
+  var buttons = document.getElementById('buttons');
+  buttons.addEventListener('click', function(event) {
+    var cmdobj = {};
+    var command = event.target.id[0];
+    cmdobj[command] = {};
 
-        var options = document.getElementsByTagName('input');
-        for (var i = 0; i < options.length; i++) {
-          cmdobj[command][options[i].name[0]] = options[i].value;
-        }
+    var options = document.getElementsByTagName('input');
+    for (var i = 0; i < options.length; i++) {
+      cmdobj[command][options[i].name[0]] = options[i].value;
+    }
 
-        systemPort.postMessage(cmdobj);
-      });
-    })(buttons[i].textContent[0].toLowerCase());
-  }
+    systemPort.postMessage(cmdobj);
+  });
 };
