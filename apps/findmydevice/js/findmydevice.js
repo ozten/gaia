@@ -2,6 +2,7 @@
 /* global asyncStorage */
 /* global FindMyDeviceRequester */
 /* global FindMyDeviceCommands */
+/* global dump */
 
 'use strict';
 
@@ -32,7 +33,7 @@ var FindMyDevice = {
     var self = this;
 
     SettingsListener.observe('findmydevice.registered', false, function(value) {
-      console.log('findmydevice registered: ' + value);
+      dump('findmydevice registered: ' + value);
 
       if (value === true) {
         asyncStorage.getItem('findmydevice-state', function(state) {
@@ -49,7 +50,7 @@ var FindMyDevice = {
     });
 
     SettingsListener.observe('findmydevice.enabled', false, function(value) {
-      console.log('findmydevice enabled: ' + value);
+      dump('findmydevice enabled: ' + value);
 
       self._enabled = value;
 
@@ -61,17 +62,17 @@ var FindMyDevice = {
     });
 
     SettingsListener.observe('findmydevice.assertion', '', function(value) {
-      console.log('findmydevice got assertion: ' + value);
+      dump('findmydevice got assertion: ' + value);
       self._assertion = value;
     });
 
     navigator.mozSetMessageHandler('push', function(message) {
-      console.log('findmydevice got push notification!');
+      dump('findmydevice got push notification!');
       self._replyAndFetchCommands();
     });
 
     navigator.mozSetMessageHandler('push-register', function(message) {
-      console.log('findmydevice lost push endpoint, re-registering');
+      dump('findmydevice lost push endpoint, re-registering');
       SettingsListener.getSettingsLock().set({
         'findmydevice.registered': false
       });
@@ -96,7 +97,7 @@ var FindMyDevice = {
 
       var port = request.port;
       port.onmessage = function(event) {
-        console.log('got request for test command!');
+        dump('got request for test command!');
         var enabled = self._enabled;
         self._enabled = true;
         self._processCommands(event.data);
@@ -106,8 +107,8 @@ var FindMyDevice = {
   },
 
   _registerIfEnabled: function fmd_register() {
-    console.log('findmydevice attempting registration.');
-    console.log('enabled: ' + this._enabled +
+    dump('findmydevice attempting registration.');
+    dump('enabled: ' + this._enabled +
         ', assertion: ' + this._assertion +
         ', registering: ' + this._registering);
 
@@ -120,7 +121,7 @@ var FindMyDevice = {
 
     var pushRequest = navigator.push.register();
     pushRequest.onsuccess = function fmd_push_handler() {
-      console.log('findmydevice received push endpoint!');
+      dump('findmydevice received push endpoint!');
 
       var endpoint = pushRequest.result;
 
@@ -135,7 +136,7 @@ var FindMyDevice = {
         }
 
         self._requester.post('/register/', obj, function(response) {
-          console.log('findmydevice successfully registered: ' +
+          dump('findmydevice successfully registered: ' +
             JSON.stringify(response));
 
           asyncStorage.setItem('findmydevice-state', response, function() {
@@ -150,7 +151,7 @@ var FindMyDevice = {
     };
 
     pushRequest.onerror = function fmd_push_error_handler() {
-      console.log('findmydevice push request failed!');
+      dump('findmydevice push request failed!');
 
       self._registering = false;
       self._scheduleAlarm('retry');
@@ -171,7 +172,7 @@ var FindMyDevice = {
       var interval = 1 + Math.floor(5 * Math.random());
       nextAlarm.setMinutes(nextAlarm.getMinutes() + interval);
     } else {
-      console.error('invalid alarm mode!');
+      dump('invalid alarm mode!');
       return;
     }
 
@@ -227,7 +228,7 @@ var FindMyDevice = {
       if (cmd in commandsToMethods) {
         var args = cmdobj[cmd], cb = this._replyCallback.bind(this, cmd);
 
-        console.log('command ' + cmd + ', args ' + JSON.stringify(args));
+        dump('command ' + cmd + ', args ' + JSON.stringify(args));
         this._commands[commandsToMethods[cmd]](args, cb);
       } else {
         this._replyCallback(cmd, false, 'command not available');
@@ -238,7 +239,7 @@ var FindMyDevice = {
   },
 
   _handleServerError: function fmd_handle_server_error(err) {
-    console.log('findmydevice request failed with status: ' + err.status);
+    dump('findmydevice request failed with status: ' + err.status);
     if (err.status === 401 && this._registered) {
       SettingsListener.getSettingsLock().set({
         'findmydevice.registered': false

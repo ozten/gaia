@@ -1,5 +1,6 @@
 /* global SettingsURL */
 /* global SettingsListener */
+/* global dump */
 
 'use strict';
 
@@ -51,7 +52,7 @@ var FindMyDeviceCommands = {
     };
 
     appreq.onerror = function fmdc_getapp_error() {
-      console.error('failed to grab reference to app!');
+      dump('failed to grab reference to app!');
     };
   },
 
@@ -103,7 +104,7 @@ var FindMyDeviceCommands = {
 
     this._watchId = navigator.geolocation.watchPosition(
       function fmdc_watchposition_success(position) {
-        console.log('updating location to (' +
+        dump('updating location to (' +
           position.coords.latitude + ', ' +
           position.coords.longitude + ')'
         );
@@ -130,9 +131,9 @@ var FindMyDeviceCommands = {
         if (!this.done) {
           this.continue();
         } else {
-          console.log('done wiping ' + target);
+          dump('done wiping ' + target);
           if (++wiped == toWipe.length) {
-            console.log('all targets wiped, starting factory reset!');
+            dump('all targets wiped, starting factory reset!');
             navigator.mozPower.factoryReset();
             reply(true); // testing only
           }
@@ -142,7 +143,7 @@ var FindMyDeviceCommands = {
 
     function cursor_onerror(target) {
       return function() {
-        console.log('wipe failed to acquire cursor for ' + target);
+        dump('wipe failed to acquire cursor for ' + target);
         wiped++;
       };
     }
