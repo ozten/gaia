@@ -53,9 +53,6 @@ var FindMyDeviceCommands = {
     appreq.onerror = function fmdc_getapp_error() {
       console.error('failed to grab reference to app!');
     };
-
-    // TODO check command dependencies here?
-    // TODO return list of available commands?
   },
 
   _deviceHasPasscode: function fmdc_device_has_passcode() {
