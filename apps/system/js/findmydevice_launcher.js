@@ -4,7 +4,7 @@
 
 function launchFindMyDevice() {
   var app = Applications.getByManifestURL(
-    'app://findmydevice.gaiamobile.org/manifest.webapp');
+    location.protocol + '//findmydevice.gaiamobile.org/manifest.webapp');
   app.launch();
 }
 
