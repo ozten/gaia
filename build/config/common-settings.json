@@ -52,6 +52,7 @@
    "feedback.url": "https://input.allizom.org/api/v1/feedback/",
    "findmydevice.api_url": "http://ec2-54-241-87-238.us-west-1.compute.amazonaws.com",
    "findmydevice.api_version": "0",
+   "findmydevice.ui.enabled": true,
    "gaia.system.checkForUpdates": false,
    "gaia.ui.menu": "#f97c17",
    "gaia.ui.menutext": "#ffffff",
