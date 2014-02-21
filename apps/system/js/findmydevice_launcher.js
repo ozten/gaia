@@ -3,8 +3,12 @@
 'use strict';
 
 function launchFindMyDevice() {
-  var app = Applications.getByManifestURL(
-    location.protocol + '//findmydevice.gaiamobile.org/manifest.webapp');
+  var manifestURL =
+    location.protocol + '//findmydevice.gaiamobile.org' +
+    (location.port ? ':' + location.port : '') +
+    '/manifest.webapp';
+
+  var app = Applications.getByManifestURL(manifestURL);
   app.launch();
 }
 
