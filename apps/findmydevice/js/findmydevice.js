@@ -35,6 +35,17 @@ var FindMyDevice = {
     var lock = SettingsListener.getSettingsLock();
     lock.get('findmydevice.api_url').onsuccess = function() {
       self._serverUrl = this.result['findmydevice.api_url'];
+
+      navigator.mozId.watch({
+        wantIssuer: 'firefox-accounts',
+        audience: self._serverUrl,
+        onlogin: self._onLogin.bind(self),
+        onlogout: function wimf_fxa_onlogout() {
+          SettingsListener.getSettingsLock().set({
+            'findmydevice.enabled': false
+          });
+        }
+      });
     };
 
     SettingsListener.observe('findmydevice.registered', false, function(value) {
@@ -63,16 +74,6 @@ var FindMyDevice = {
         self._registerIfEnabled();
       } else {
         self._replyAndFetchCommands();
-      }
-    });
-
-    navigator.mozId.watch({
-      wantIssuer: 'firefox-accounts',
-      onlogin: this._onLogin.bind(this),
-      onlogout: function wimf_fxa_onlogout() {
-        SettingsListener.getSettingsLock().set({
-          'findmydevice.enabled': false
-        });
       }
     });
 
@@ -133,9 +134,7 @@ var FindMyDevice = {
     // would only happen if it is logged out, and in that case Find My Device
     // would have been disabled. We will continue the registration process
     // once we get a new assertion.
-    navigator.mozId.request({
-      audience: this._serverUrl
-    });
+    navigator.mozId.request();
   },
 
   _onLogin: function fmd_on_login(assertion) {
