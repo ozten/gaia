@@ -128,6 +128,10 @@ contacts.Settings = (function() {
     exportContacts.firstElementChild.
       addEventListener('click', exportContactsHandler);
 
+    backupContacts = document.getElementById('backupContacts');
+    backupContacts.firstElementChild.
+      addEventListener('click', backupContactsHandler);
+
     // Handlers for the actions related with EXPORT/IMPORT
     importOptions = document.getElementById('import-options');
     importOptions.addEventListener('click', importOptionsHandler);
@@ -192,6 +196,19 @@ contacts.Settings = (function() {
         Contacts.view('search', function() {
           importSettingsPanel.classList.add('export');
           updateImportTitle('exportContactsTitle');
+          navigationHandler.go('import-settings', 'right-left');
+        });
+      }
+  };
+
+  function backupContactsHandler() {
+      // Hide elements for import and transition
+      LazyLoader.load(['/contacts/js/backup/contacts_backup.js'], loadSearch);
+
+      function loadSearch() {
+        Contacts.view('search', function() {
+          importSettingsPanel.classList.add('export');
+          updateImportTitle('backupContactsTitle');
           navigationHandler.go('import-settings', 'right-left');
         });
       }
